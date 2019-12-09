@@ -1,17 +1,33 @@
-name: CI
-
-on: [push]
-
+name: 'Terraform GitHub Actions'
+on:
+  - pull_request
 jobs:
-  build:
-
+  terraform:
+    name: 'Terraform'
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v1
-    - name: Run a one-line script
-      run: echo Hello, world!
-    - name: Run a multi-line script
-      run: |
-        echo Add other actions to build,
-        echo test, and deploy your project.
+      - name: 'Checkout'
+        uses: actions/checkout@master
+      - name: 'Terraform Init'
+        uses: hashicorp/terraform-github-actions@master
+        with:
+          tf_actions_version: 0.12.14
+          tf_actions_subcommand: 'init'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: 'Terraform Validate'
+        uses: hashicorp/terraform-github-actions@master
+        with:
+          tf_actions_version: 0.12.14
+          tf_actions_subcommand: 'validate'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: 'Terraform Format'
+        uses: hashicorp/terraform-github-actions@master
+        with:
+          tf_actions_version: 0.12.14
+          tf_actions_subcommand: 'fmt'
+          tf_actions_working_dir: '.'
+          tf_actions_comment: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
